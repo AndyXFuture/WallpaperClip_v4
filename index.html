@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宽屏壁纸裁切工具</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JSZip for zipping files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver for saving files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </div>
+        </label>
+    </div>
+
+    <div id="app">
+        <!-- Step 1: Configuration & Upload -->
+        <section id="step-config" class="step active">
+            <div class="container">
+                <h1>宽屏壁纸裁切工具</h1>
+                <p class="subtitle">批量处理，完美适配您的宽屏显示器</p>
+                
+                <div class="card">
+                    <h2>1. 选择裁切比例</h2>
+                    <div class="ratio-options">
+                        <button class="ratio-btn active" data-ratio="32:9">32:9</button>
+                        <button class="ratio-btn" data-ratio="21:9">21:9</button>
+                        <button class="ratio-btn" data-ratio="16:9">16:9</button>
+                        <button class="ratio-btn" data-ratio="4:3">4:3</button>
+                        <button class="ratio-btn" data-ratio="9:21">9:21</button>
+                        <button class="ratio-btn" data-ratio="9:16">9:16</button>
+                        <button class="ratio-btn" id="custom-ratio-btn">自定义</button>
+                    </div>
+                    <div id="custom-ratio-input" class="hidden">
+                        <input type="number" id="custom-w" placeholder="宽" min="1">
+                        <span>:</span>
+                        <input type="number" id="custom-h" placeholder="高" min="1">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>2. 导入图片</h2>
+                    <div class="upload-area" id="drop-zone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>点击或拖拽图片文件到此处</p>
+                        <input type="file" id="file-input" multiple accept="image/*">
+                    </div>
+                    <div id="file-list-info" class="hidden">
+                        <p>已选择 <span id="file-count">0</span> 张图片</p>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="primary-btn" disabled>开始裁切 <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </section>
+
+        <!-- Step 2: Cropping Interface -->
+        <section id="step-crop" class="step">
+            <div class="crop-container">
+                <div class="canvas-wrapper" id="canvas-wrapper">
+                    <!-- Image and overlay will be injected here via JS -->
+                    <canvas id="crop-canvas"></canvas>
+                    <div id="crop-overlay">
+                        <div class="overlay-mask top"></div>
+                        <div class="overlay-mask bottom"></div>
+                        <div class="overlay-mask left"></div>
+                        <div class="overlay-mask right"></div>
+                        <div class="crop-box"></div>
+                    </div>
+                </div>
+                
+                <!-- Floating Control Window -->
+                <div id="floating-controls" class="floating-window">
+                    <div class="drag-handle"><i class="fas fa-grip-lines"></i> <span>控制面板</span></div>
+                    <div class="controls-content">
+                        <div class="progress-info">
+                            <span id="current-index">1</span> / <span id="total-count">10</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="preview-btn" class="secondary-btn">预览</button>
+                            <button id="skip-btn" class="secondary-btn">跳过</button>
+                            <button id="next-btn" class="primary-btn">下一个</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preview Modal -->
+        <div id="preview-modal" class="hidden">
+            <div class="preview-content">
+                <span id="close-preview">&times;</span>
+                <img id="preview-image" src="" alt="Preview">
+            </div>
+        </div>
+
+        <!-- Step 3: Completion -->
+        <section id="step-done" class="step">
+            <div class="container">
+                <div class="success-card">
+                    <i class="fas fa-check-circle"></i>
+                    <h2>裁切完成!</h2>
+                    <p>您的壁纸包已准备就绪。</p>
+                    <div id="download-area">
+                        <p>正在打包...</p>
+                    </div>
+                    <button id="restart-btn" class="secondary-btn"><i class="fas fa-redo"></i> 回到开始界面</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
